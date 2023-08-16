@@ -825,7 +825,7 @@
 // <e> COMP_ENABLED - nrf_drv_comp - COMP peripheral driver - legacy layer
 //==========================================================
 #ifndef COMP_ENABLED
-#define COMP_ENABLED 1
+#define COMP_ENABLED 0
 #endif
 // <o> COMP_CONFIG_REF  - Reference voltage
  
@@ -926,7 +926,7 @@
 #endif
 // <o> GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS - Number of lower power input pins 
 #ifndef GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS
-#define GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS 4
+#define GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS 5
 #endif
 
 // <o> GPIOTE_CONFIG_IRQ_PRIORITY  - Interrupt priority
@@ -951,7 +951,7 @@
 // <e> I2S_ENABLED - nrf_drv_i2s - I2S peripheral driver - legacy layer
 //==========================================================
 #ifndef I2S_ENABLED
-#define I2S_ENABLED 1
+#define I2S_ENABLED 0
 #endif
 // <o> I2S_CONFIG_SCK_PIN - SCK pin  <0-31> 
 
@@ -1148,7 +1148,7 @@
 // <e> LPCOMP_ENABLED - nrf_drv_lpcomp - LPCOMP peripheral driver - legacy layer
 //==========================================================
 #ifndef LPCOMP_ENABLED
-#define LPCOMP_ENABLED 1
+#define LPCOMP_ENABLED 0
 #endif
 // <o> LPCOMP_CONFIG_REFERENCE  - Reference voltage
  
@@ -1313,7 +1313,7 @@
 // <e> NRFX_COMP_ENABLED - nrfx_comp - COMP peripheral driver
 //==========================================================
 #ifndef NRFX_COMP_ENABLED
-#define NRFX_COMP_ENABLED 1
+#define NRFX_COMP_ENABLED 0
 #endif
 // <o> NRFX_COMP_CONFIG_REF  - Reference voltage
  
@@ -1452,7 +1452,7 @@
 // <e> NRFX_GPIOTE_ENABLED - nrfx_gpiote - GPIOTE peripheral driver
 //==========================================================
 #ifndef NRFX_GPIOTE_ENABLED
-#define NRFX_GPIOTE_ENABLED 1
+#define NRFX_GPIOTE_ENABLED 0
 #endif
 // <o> NRFX_GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS - Number of lower power input pins 
 #ifndef NRFX_GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS
@@ -1530,7 +1530,7 @@
 // <e> NRFX_I2S_ENABLED - nrfx_i2s - I2S peripheral driver
 //==========================================================
 #ifndef NRFX_I2S_ENABLED
-#define NRFX_I2S_ENABLED 1
+#define NRFX_I2S_ENABLED 0
 #endif
 // <o> NRFX_I2S_CONFIG_SCK_PIN - SCK pin  <0-31> 
 
@@ -1725,7 +1725,7 @@
 // <e> NRFX_LPCOMP_ENABLED - nrfx_lpcomp - LPCOMP peripheral driver
 //==========================================================
 #ifndef NRFX_LPCOMP_ENABLED
-#define NRFX_LPCOMP_ENABLED 1
+#define NRFX_LPCOMP_ENABLED 0
 #endif
 // <o> NRFX_LPCOMP_CONFIG_REFERENCE  - Reference voltage
  
@@ -1854,7 +1854,7 @@
 // <e> NRFX_PDM_ENABLED - nrfx_pdm - PDM peripheral driver
 //==========================================================
 #ifndef NRFX_PDM_ENABLED
-#define NRFX_PDM_ENABLED 1
+#define NRFX_PDM_ENABLED 0
 #endif
 // <o> NRFX_PDM_CONFIG_MODE  - Mode
  
@@ -1955,7 +1955,7 @@
 // <e> NRFX_POWER_ENABLED - nrfx_power - POWER peripheral driver
 //==========================================================
 #ifndef NRFX_POWER_ENABLED
-#define NRFX_POWER_ENABLED 1
+#define NRFX_POWER_ENABLED 0
 #endif
 // <o> NRFX_POWER_CONFIG_IRQ_PRIORITY  - Interrupt priority
  
@@ -1995,7 +1995,7 @@
 // <e> NRFX_PPI_ENABLED - nrfx_ppi - PPI peripheral allocator
 //==========================================================
 #ifndef NRFX_PPI_ENABLED
-#define NRFX_PPI_ENABLED 1
+#define NRFX_PPI_ENABLED 0
 #endif
 // <e> NRFX_PPI_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
@@ -2053,7 +2053,7 @@
 // <e> NRFX_PRS_ENABLED - nrfx_prs - Peripheral Resource Sharing module
 //==========================================================
 #ifndef NRFX_PRS_ENABLED
-#define NRFX_PRS_ENABLED 1
+#define NRFX_PRS_ENABLED 0
 #endif
 // <q> NRFX_PRS_BOX_0_ENABLED  - Enables box 0 in the module.
  
@@ -2146,7 +2146,7 @@
 // <e> NRFX_PWM_ENABLED - nrfx_pwm - PWM peripheral driver
 //==========================================================
 #ifndef NRFX_PWM_ENABLED
-#define NRFX_PWM_ENABLED 1
+#define NRFX_PWM_ENABLED 0
 #endif
 // <q> NRFX_PWM0_ENABLED  - Enable PWM0 instance
  
@@ -2345,7 +2345,7 @@
 // <e> NRFX_QDEC_ENABLED - nrfx_qdec - QDEC peripheral driver
 //==========================================================
 #ifndef NRFX_QDEC_ENABLED
-#define NRFX_QDEC_ENABLED 1
+#define NRFX_QDEC_ENABLED 0
 #endif
 // <o> NRFX_QDEC_CONFIG_REPORTPER  - Report period
  
@@ -2497,7 +2497,7 @@
 // <e> NRFX_RNG_ENABLED - nrfx_rng - RNG peripheral driver
 //==========================================================
 #ifndef NRFX_RNG_ENABLED
-#define NRFX_RNG_ENABLED 1
+#define NRFX_RNG_ENABLED 0
 #endif
 // <q> NRFX_RNG_CONFIG_ERROR_CORRECTION  - Error correction
  
@@ -2577,7 +2577,7 @@
 // <e> NRFX_RTC_ENABLED - nrfx_rtc - RTC peripheral driver
 //==========================================================
 #ifndef NRFX_RTC_ENABLED
-#define NRFX_RTC_ENABLED 1
+#define NRFX_RTC_ENABLED 0
 #endif
 // <q> NRFX_RTC0_ENABLED  - Enable RTC0 instance
  
@@ -2690,7 +2690,7 @@
 // <e> NRFX_SAADC_ENABLED - nrfx_saadc - SAADC peripheral driver
 //==========================================================
 #ifndef NRFX_SAADC_ENABLED
-#define NRFX_SAADC_ENABLED 1
+#define NRFX_SAADC_ENABLED 0
 #endif
 // <o> NRFX_SAADC_CONFIG_RESOLUTION  - Resolution
  
@@ -2797,7 +2797,7 @@
 // <e> NRFX_SPIM_ENABLED - nrfx_spim - SPIM peripheral driver
 //==========================================================
 #ifndef NRFX_SPIM_ENABLED
-#define NRFX_SPIM_ENABLED 1
+#define NRFX_SPIM_ENABLED 0
 #endif
 // <q> NRFX_SPIM0_ENABLED  - Enable SPIM0 instance
  
@@ -2915,7 +2915,7 @@
 // <e> NRFX_SPIS_ENABLED - nrfx_spis - SPIS peripheral driver
 //==========================================================
 #ifndef NRFX_SPIS_ENABLED
-#define NRFX_SPIS_ENABLED 1
+#define NRFX_SPIS_ENABLED 0
 #endif
 // <q> NRFX_SPIS0_ENABLED  - Enable SPIS0 instance
  
@@ -3037,7 +3037,7 @@
 // <e> NRFX_SPI_ENABLED - nrfx_spi - SPI peripheral driver
 //==========================================================
 #ifndef NRFX_SPI_ENABLED
-#define NRFX_SPI_ENABLED 1
+#define NRFX_SPI_ENABLED 0
 #endif
 // <q> NRFX_SPI0_ENABLED  - Enable SPI0 instance
  
@@ -3141,7 +3141,7 @@
 // <e> NRFX_SWI_ENABLED - nrfx_swi - SWI/EGU peripheral allocator
 //==========================================================
 #ifndef NRFX_SWI_ENABLED
-#define NRFX_SWI_ENABLED 1
+#define NRFX_SWI_ENABLED 0
 #endif
 // <q> NRFX_EGU_ENABLED  - Enable EGU support
  
@@ -3249,13 +3249,13 @@
  
 
 #ifndef NRFX_SYSTICK_ENABLED
-#define NRFX_SYSTICK_ENABLED 1
+#define NRFX_SYSTICK_ENABLED 0
 #endif
 
 // <e> NRFX_TIMER_ENABLED - nrfx_timer - TIMER periperal driver
 //==========================================================
 #ifndef NRFX_TIMER_ENABLED
-#define NRFX_TIMER_ENABLED 1
+#define NRFX_TIMER_ENABLED 0
 #endif
 // <q> NRFX_TIMER0_ENABLED  - Enable TIMER0 instance
  
@@ -3400,7 +3400,7 @@
 // <e> NRFX_TWIM_ENABLED - nrfx_twim - TWIM peripheral driver
 //==========================================================
 #ifndef NRFX_TWIM_ENABLED
-#define NRFX_TWIM_ENABLED 1
+#define NRFX_TWIM_ENABLED 0
 #endif
 // <q> NRFX_TWIM0_ENABLED  - Enable TWIM0 instance
  
@@ -3517,7 +3517,7 @@
 // <e> NRFX_TWIS_ENABLED - nrfx_twis - TWIS peripheral driver
 //==========================================================
 #ifndef NRFX_TWIS_ENABLED
-#define NRFX_TWIS_ENABLED 1
+#define NRFX_TWIS_ENABLED 0
 #endif
 // <q> NRFX_TWIS0_ENABLED  - Enable TWIS0 instance
  
@@ -3652,7 +3652,7 @@
 // <e> NRFX_TWI_ENABLED - nrfx_twi - TWI peripheral driver
 //==========================================================
 #ifndef NRFX_TWI_ENABLED
-#define NRFX_TWI_ENABLED 1
+#define NRFX_TWI_ENABLED 0
 #endif
 // <q> NRFX_TWI0_ENABLED  - Enable TWI0 instance
  
@@ -3998,7 +3998,7 @@
 // <e> NRFX_WDT_ENABLED - nrfx_wdt - WDT peripheral driver
 //==========================================================
 #ifndef NRFX_WDT_ENABLED
-#define NRFX_WDT_ENABLED 1
+#define NRFX_WDT_ENABLED 0
 #endif
 // <o> NRFX_WDT_CONFIG_BEHAVIOUR  - WDT behavior in CPU SLEEP or HALT mode
  
@@ -4141,7 +4141,7 @@
 // <e> PDM_ENABLED - nrf_drv_pdm - PDM peripheral driver - legacy layer
 //==========================================================
 #ifndef PDM_ENABLED
-#define PDM_ENABLED 1
+#define PDM_ENABLED 0
 #endif
 // <o> PDM_CONFIG_MODE  - Mode
  
@@ -4236,13 +4236,13 @@
  
 
 #ifndef PPI_ENABLED
-#define PPI_ENABLED 1
+#define PPI_ENABLED 0
 #endif
 
 // <e> PWM_ENABLED - nrf_drv_pwm - PWM peripheral driver - legacy layer
 //==========================================================
 #ifndef PWM_ENABLED
-#define PWM_ENABLED 1
+#define PWM_ENABLED 0
 #endif
 // <o> PWM_DEFAULT_CONFIG_OUT0_PIN - Out0 pin  <0-31> 
 
@@ -4392,7 +4392,7 @@
 // <e> QDEC_ENABLED - nrf_drv_qdec - QDEC peripheral driver - legacy layer
 //==========================================================
 #ifndef QDEC_ENABLED
-#define QDEC_ENABLED 1
+#define QDEC_ENABLED 0
 #endif
 // <o> QDEC_CONFIG_REPORTPER  - Report period
  
@@ -4495,7 +4495,7 @@
 // <e> RNG_ENABLED - nrf_drv_rng - RNG peripheral driver - legacy layer
 //==========================================================
 #ifndef RNG_ENABLED
-#define RNG_ENABLED 1
+#define RNG_ENABLED 0
 #endif
 // <q> RNG_CONFIG_ERROR_CORRECTION  - Error correction
  
@@ -4582,7 +4582,7 @@
  
 
 #ifndef RTC2_ENABLED
-#define RTC2_ENABLED 1
+#define RTC2_ENABLED 0
 #endif
 
 // <o> NRF_MAXIMUM_LATENCY_US - Maximum possible time[us] in highest priority interrupt 
@@ -4595,7 +4595,7 @@
 // <e> SAADC_ENABLED - nrf_drv_saadc - SAADC peripheral driver - legacy layer
 //==========================================================
 #ifndef SAADC_ENABLED
-#define SAADC_ENABLED 1
+#define SAADC_ENABLED 0
 #endif
 // <o> SAADC_CONFIG_RESOLUTION  - Resolution
  
@@ -4653,7 +4653,7 @@
 // <e> SPIS_ENABLED - nrf_drv_spis - SPIS peripheral driver - legacy layer
 //==========================================================
 #ifndef SPIS_ENABLED
-#define SPIS_ENABLED 1
+#define SPIS_ENABLED 0
 #endif
 // <o> SPIS_DEFAULT_CONFIG_IRQ_PRIORITY  - Interrupt priority
  
@@ -4746,7 +4746,7 @@
 // <e> SPI_ENABLED - nrf_drv_spi - SPI/SPIM peripheral driver - legacy layer
 //==========================================================
 #ifndef SPI_ENABLED
-#define SPI_ENABLED 1
+#define SPI_ENABLED 0
 #endif
 // <o> SPI_DEFAULT_CONFIG_IRQ_PRIORITY  - Interrupt priority
  
@@ -4837,13 +4837,13 @@
  
 
 #ifndef SYSTICK_ENABLED
-#define SYSTICK_ENABLED 1
+#define SYSTICK_ENABLED 0
 #endif
 
 // <e> TIMER_ENABLED - nrf_drv_timer - TIMER periperal driver - legacy layer
 //==========================================================
 #ifndef TIMER_ENABLED
-#define TIMER_ENABLED 1
+#define TIMER_ENABLED 0
 #endif
 // <o> TIMER_DEFAULT_CONFIG_FREQUENCY  - Timer frequency if in Timer mode
  
@@ -4939,7 +4939,7 @@
 // <e> TWIS_ENABLED - nrf_drv_twis - TWIS peripheral driver - legacy layer
 //==========================================================
 #ifndef TWIS_ENABLED
-#define TWIS_ENABLED 1
+#define TWIS_ENABLED 0
 #endif
 // <q> TWIS0_ENABLED  - Enable TWIS0 instance
  
@@ -5025,7 +5025,7 @@
 // <e> TWI_ENABLED - nrf_drv_twi - TWI/TWIM peripheral driver - legacy layer
 //==========================================================
 #ifndef TWI_ENABLED
-#define TWI_ENABLED 1
+#define TWI_ENABLED 0
 #endif
 // <o> TWI_DEFAULT_CONFIG_FREQUENCY  - Frequency
  
@@ -5207,7 +5207,7 @@
 // <e> USBD_ENABLED - nrf_drv_usbd - Software Component
 //==========================================================
 #ifndef USBD_ENABLED
-#define USBD_ENABLED 1
+#define USBD_ENABLED 0
 #endif
 // <o> USBD_CONFIG_IRQ_PRIORITY  - Interrupt priority
  
@@ -5264,7 +5264,7 @@
 // <e> WDT_ENABLED - nrf_drv_wdt - WDT peripheral driver - legacy layer
 //==========================================================
 #ifndef WDT_ENABLED
-#define WDT_ENABLED 1
+#define WDT_ENABLED 0
 #endif
 // <o> WDT_CONFIG_BEHAVIOUR  - WDT behavior in CPU SLEEP or HALT mode
  
@@ -5313,7 +5313,7 @@
  
 
 #ifndef NRF_TWI_SENSOR_ENABLED
-#define NRF_TWI_SENSOR_ENABLED 1
+#define NRF_TWI_SENSOR_ENABLED 0
 #endif
 
 // </h> 
@@ -5340,7 +5340,7 @@
  
 
 #ifndef APP_PWM_ENABLED
-#define APP_PWM_ENABLED 1
+#define APP_PWM_ENABLED 0
 #endif
 
 // <e> APP_SCHEDULER_ENABLED - app_scheduler - Events scheduler

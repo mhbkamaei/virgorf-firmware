@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "app_uart.h"
-#include "nrfx_uart.h"
+#include "nrf_drv_uart.h"
 #include "app_error.h"
 #include "nrf_delay.h"
 #include "nrf.h"
@@ -12,35 +12,26 @@
 #define UART_TX_BUF_SIZE 256                         /**< UART TX buffer size. */
 #define UART_RX_BUF_SIZE 1                           /**< UART RX buffer size. */
 
-
-#define RX_PIN_NUMBER  25
-#define TX_PIN_NUMBER  24
+#define RX_PIN_NUMBER  8
+#define TX_PIN_NUMBER  6
 #define CTS_PIN_NUMBER 23
 #define RTS_PIN_NUMBER 22
 #define HWFC           false
 
-static nrfx_uart_t m_uart = NRFX_UART_INSTANCE(0);
+static nrf_drv_uart_t m_uart = NRF_DRV_UART_INSTANCE(0);
+
 // Define payload length
 #define TX_PAYLOAD_LENGTH 3 ///< 3 byte payload length
 
 // ticks for inactive keyboard
 #define INACTIVE 100000
 
-// Binary printing
-#define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c"
-#define BYTE_TO_BINARY(byte)  \
-  (byte & 0x10 ? '#' : '.'), \
-  (byte & 0x08 ? '#' : '.'), \
-  (byte & 0x04 ? '#' : '.'), \
-  (byte & 0x02 ? '#' : '.'), \
-  (byte & 0x01 ? '#' : '.') 
-
-
 // Data and acknowledgement payloads
 static uint8_t data_payload_left[NRF_GZLL_CONST_MAX_PAYLOAD_LENGTH];  ///< Placeholder for data payload received from host. 
 static uint8_t data_payload_right[NRF_GZLL_CONST_MAX_PAYLOAD_LENGTH];  ///< Placeholder for data payload received from host. 
 static uint8_t ack_payload[TX_PAYLOAD_LENGTH];                   ///< Payload to attach to ACK sent to device.
-static uint8_t data_buffer[10];
+static uint8_t data_buffer[8];
+static uint8_t eol = 0xE0;
 
 // Debug helper variables
 extern nrf_gzll_error_code_t nrf_gzll_error_code;   ///< Error code
@@ -61,24 +52,30 @@ void uart_error_handle(app_uart_evt_t * p_event)
         APP_ERROR_HANDLER(p_event->data.error_code);
     }
 }
-static void uart_init()
-{
-    nrfx_uart_config_t uart_config = NRFX_UART_DEFAULT_CONFIG;
-    uart_config.baudrate = UART_BAUDRATE_BAUDRATE_Baud115200; //User defined
-    uart_config.hwfc = NRF_UART_HWFC_DISABLED; //User defined
-    uart_config.interrupt_priority = APP_IRQ_PRIORITY_LOWEST; //User defined
-    uart_config.parity = NRF_UART_PARITY_EXCLUDED; //User defined
-    uart_config.pselcts = CTS_PIN_NUMBER; //User defined. Remove this line if flow control is disabled.
-    uart_config.pselrts = RTS_PIN_NUMBER; //User defined. Remove this line if flow control is disabled.
-    uart_config.pselrxd = RX_PIN_NUMBER; //User defined
-    uart_config.pseltxd = TX_PIN_NUMBER; //User defined
 
-    nrfx_uart_init(&m_uart, &uart_config, NULL);
-}
 
 int main(void)
 {
-    uart_init();
+    uint32_t err_code;
+    const app_uart_comm_params_t comm_params =
+      {
+          RX_PIN_NUMBER,
+          TX_PIN_NUMBER,
+          RTS_PIN_NUMBER,
+          CTS_PIN_NUMBER,
+          APP_UART_FLOW_CONTROL_DISABLED,
+          false,
+          UART_BAUDRATE_BAUDRATE_Baud1M
+      };
+
+    APP_UART_FIFO_INIT(&comm_params,
+                         UART_RX_BUF_SIZE,
+                         UART_TX_BUF_SIZE,
+                         uart_error_handle,
+                         APP_IRQ_PRIORITY_LOW,
+                         err_code);
+
+    APP_ERROR_CHECK(err_code);
 
     // Initialize Gazell
     nrf_gzll_init(NRF_GZLL_MODE_HOST);
@@ -103,74 +100,92 @@ int main(void)
         {
             packet_received_left = false;
 
-            data_buffer[0] = ((data_payload_left[0] & 1<<3) ? 1:0) << 0 |
-                             ((data_payload_left[0] & 1<<4) ? 1:0) << 1 |
-                             ((data_payload_left[0] & 1<<5) ? 1:0) << 2 |
-                             ((data_payload_left[0] & 1<<6) ? 1:0) << 3 |
-                             ((data_payload_left[0] & 1<<7) ? 1:0) << 4;
+            data_buffer[0] =    ((data_payload_right[0] & 1<<8) ? 1:0) << 0 |
+                                ((data_payload_right[0] & 1<<7) ? 1:0) << 1 |
+                                ((data_payload_right[0] & 1<<6) ? 1:0) << 2 |
+                                ((data_payload_right[0] & 1<<5) ? 1:0) << 3 |
+                                ((data_payload_right[0] & 1<<4) ? 1:0) << 4 |
+                                ((data_payload_right[0] & 1<<3) ? 1:0) << 5 |
+                                ((data_payload_right[0] & 1<<2) ? 1:0) << 6 |
+                                ((data_payload_right[0] & 1<<1) ? 1:0) << 7;
 
-            data_buffer[2] = ((data_payload_left[1] & 1<<6) ? 1:0) << 0 |
-                             ((data_payload_left[1] & 1<<7) ? 1:0) << 1 |
-                             ((data_payload_left[0] & 1<<0) ? 1:0) << 2 |
-                             ((data_payload_left[0] & 1<<1) ? 1:0) << 3 |
-                             ((data_payload_left[0] & 1<<2) ? 1:0) << 4;
+            data_buffer[2] =    ((data_payload_right[1] & 1<<8) ? 1:0) << 0 |
+                                ((data_payload_right[1] & 1<<7) ? 1:0) << 1 |
+                                ((data_payload_right[1] & 1<<6) ? 1:0) << 2 |
+                                ((data_payload_right[1] & 1<<5) ? 1:0) << 3 |
+                                ((data_payload_right[1] & 1<<4) ? 1:0) << 4 |
+                                ((data_payload_right[1] & 1<<3) ? 1:0) << 5 |
+                                ((data_payload_right[1] & 1<<2) ? 1:0) << 6 |
+                                ((data_payload_right[1] & 1<<1) ? 1:0) << 7;
 
-            data_buffer[4] = ((data_payload_left[1] & 1<<1) ? 1:0) << 0 |
-                             ((data_payload_left[1] & 1<<2) ? 1:0) << 1 |
-                             ((data_payload_left[1] & 1<<3) ? 1:0) << 2 |
-                             ((data_payload_left[1] & 1<<4) ? 1:0) << 3 |
-                             ((data_payload_left[1] & 1<<5) ? 1:0) << 4;
+            data_buffer[4] =    ((data_payload_right[2] & 1<<8) ? 1:0) << 0 |
+                                ((data_payload_right[2] & 1<<7) ? 1:0) << 1 |
+                                ((data_payload_right[2] & 1<<6) ? 1:0) << 2 |
+                                ((data_payload_right[2] & 1<<5) ? 1:0) << 3 |
+                                ((data_payload_right[2] & 1<<4) ? 1:0) << 4 |
+                                ((data_payload_right[2] & 1<<3) ? 1:0) << 5 |
+                                ((data_payload_right[2] & 1<<2) ? 1:0) << 6 |
+                                ((data_payload_right[2] & 1<<1) ? 1:0) << 7;
 
-            data_buffer[6] = ((data_payload_left[2] & 1<<5) ? 1:0) << 1 |
-                             ((data_payload_left[2] & 1<<6) ? 1:0) << 2 |
-                             ((data_payload_left[2] & 1<<7) ? 1:0) << 3 |
-                             ((data_payload_left[1] & 1<<0) ? 1:0) << 4;
-
-            data_buffer[8] = ((data_payload_left[2] & 1<<1) ? 1:0) << 1 |
-                             ((data_payload_left[2] & 1<<2) ? 1:0) << 2 |
-                             ((data_payload_left[2] & 1<<3) ? 1:0) << 3 |
-                             ((data_payload_left[2] & 1<<4) ? 1:0) << 4;
+            data_buffer[6] =    ((data_payload_right[3] & 1<<8) ? 1:0) << 0 |
+                                ((data_payload_right[3] & 1<<7) ? 1:0) << 1 |
+                                ((data_payload_right[3] & 1<<6) ? 1:0) << 2 |
+                                ((data_payload_right[3] & 1<<5) ? 1:0) << 3 |
+                                ((data_payload_right[3] & 1<<4) ? 1:0) << 4 |
+                                ((data_payload_right[3] & 1<<3) ? 1:0) << 5 |
+                                ((data_payload_right[3] & 1<<2) ? 1:0) << 6 |
+                                ((data_payload_right[3] & 1<<1) ? 1:0) << 7;
         }
 
         if (packet_received_right)
         {
+            eol = 0xF0;
             packet_received_right = false;
             
-            data_buffer[1] = ((data_payload_right[0] & 1<<7) ? 1:0) << 0 |
-                             ((data_payload_right[0] & 1<<6) ? 1:0) << 1 |
-                             ((data_payload_right[0] & 1<<5) ? 1:0) << 2 |
-                             ((data_payload_right[0] & 1<<4) ? 1:0) << 3 |
-                             ((data_payload_right[0] & 1<<3) ? 1:0) << 4;
+            data_buffer[1] =    ((data_payload_right[0] & 1<<8) ? 1:0) << 0 |
+                                ((data_payload_right[0] & 1<<7) ? 1:0) << 1 |
+                                ((data_payload_right[0] & 1<<6) ? 1:0) << 2 |
+                                ((data_payload_right[0] & 1<<5) ? 1:0) << 3 |
+                                ((data_payload_right[0] & 1<<4) ? 1:0) << 4 |
+                                ((data_payload_right[0] & 1<<3) ? 1:0) << 5 |
+                                ((data_payload_right[0] & 1<<2) ? 1:0) << 6 |
+                                ((data_payload_right[0] & 1<<1) ? 1:0) << 7;
 
-            data_buffer[3] = ((data_payload_right[0] & 1<<2) ? 1:0) << 0 |
-                             ((data_payload_right[0] & 1<<1) ? 1:0) << 1 |
-                             ((data_payload_right[0] & 1<<0) ? 1:0) << 2 |
-                             ((data_payload_right[1] & 1<<7) ? 1:0) << 3 |
-                             ((data_payload_right[1] & 1<<6) ? 1:0) << 4;
+            data_buffer[3] =    ((data_payload_right[1] & 1<<8) ? 1:0) << 0 |
+                                ((data_payload_right[1] & 1<<7) ? 1:0) << 1 |
+                                ((data_payload_right[1] & 1<<6) ? 1:0) << 2 |
+                                ((data_payload_right[1] & 1<<5) ? 1:0) << 3 |
+                                ((data_payload_right[1] & 1<<4) ? 1:0) << 4 |
+                                ((data_payload_right[1] & 1<<3) ? 1:0) << 5 |
+                                ((data_payload_right[1] & 1<<2) ? 1:0) << 6 |
+                                ((data_payload_right[1] & 1<<1) ? 1:0) << 7;
 
-            data_buffer[5] = ((data_payload_right[1] & 1<<5) ? 1:0) << 0 |
-                             ((data_payload_right[1] & 1<<4) ? 1:0) << 1 |
-                             ((data_payload_right[1] & 1<<3) ? 1:0) << 2 |
-                             ((data_payload_right[1] & 1<<2) ? 1:0) << 3 |
-                             ((data_payload_right[1] & 1<<1) ? 1:0) << 4;
+            data_buffer[5] =    ((data_payload_right[2] & 1<<8) ? 1:0) << 0 |
+                                ((data_payload_right[2] & 1<<7) ? 1:0) << 1 |
+                                ((data_payload_right[2] & 1<<6) ? 1:0) << 2 |
+                                ((data_payload_right[2] & 1<<5) ? 1:0) << 3 |
+                                ((data_payload_right[2] & 1<<4) ? 1:0) << 4 |
+                                ((data_payload_right[2] & 1<<3) ? 1:0) << 5 |
+                                ((data_payload_right[2] & 1<<2) ? 1:0) << 6 |
+                                ((data_payload_right[2] & 1<<1) ? 1:0) << 7;
 
-            data_buffer[7] = ((data_payload_right[1] & 1<<0) ? 1:0) << 0 |
-                             ((data_payload_right[2] & 1<<7) ? 1:0) << 1 |
-                             ((data_payload_right[2] & 1<<6) ? 1:0) << 2 |
-                             ((data_payload_right[2] & 1<<5) ? 1:0) << 3;
-
-            data_buffer[9] = ((data_payload_right[2] & 1<<4) ? 1:0) << 0 |
-                             ((data_payload_right[2] & 1<<3) ? 1:0) << 1 |
-                             ((data_payload_right[2] & 1<<2) ? 1:0) << 2 |
-                             ((data_payload_right[2] & 1<<1) ? 1:0) << 3;
+            data_buffer[7] =    ((data_payload_right[3] & 1<<8) ? 1:0) << 0 |
+                                ((data_payload_right[3] & 1<<7) ? 1:0) << 1 |
+                                ((data_payload_right[3] & 1<<6) ? 1:0) << 2 |
+                                ((data_payload_right[3] & 1<<5) ? 1:0) << 3 |
+                                ((data_payload_right[3] & 1<<4) ? 1:0) << 4 |
+                                ((data_payload_right[3] & 1<<3) ? 1:0) << 5 |
+                                ((data_payload_right[3] & 1<<2) ? 1:0) << 6 |
+                                ((data_payload_right[3] & 1<<1) ? 1:0) << 7;
         }
 
         // checking for a poll request from QMK
         if (app_uart_get(&c) == NRF_SUCCESS && c == 's')
         {
             // sending data to QMK, and an end byte
-            nrfx_uart_tx(&m_uart, data_buffer,10);
-            app_uart_put(0xE0);
+            nrf_drv_uart_tx(&m_uart, data_buffer,8);
+            app_uart_put(eol);
+            eol = 0xE;
         }
         // allowing UART buffers to clear
         nrf_delay_us(10);
@@ -185,7 +200,6 @@ int main(void)
             data_buffer[2] = 0;
             data_buffer[4] = 0;
             data_buffer[6] = 0;
-            data_buffer[8] = 0;
             left_active = 0;
         }
         if (right_active > INACTIVE)
@@ -194,7 +208,6 @@ int main(void)
             data_buffer[3] = 0;
             data_buffer[5] = 0;
             data_buffer[7] = 0;
-            data_buffer[9] = 0;
             right_active = 0;
         }
     }

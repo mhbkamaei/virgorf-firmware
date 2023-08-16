@@ -825,7 +825,7 @@
 // <e> COMP_ENABLED - nrf_drv_comp - COMP peripheral driver - legacy layer
 //==========================================================
 #ifndef COMP_ENABLED
-#define COMP_ENABLED 1
+#define COMP_ENABLED 0
 #endif
 // <o> COMP_CONFIG_REF  - Reference voltage
  
@@ -922,7 +922,7 @@
 // <e> GPIOTE_ENABLED - nrf_drv_gpiote - GPIOTE peripheral driver - legacy layer
 //==========================================================
 #ifndef GPIOTE_ENABLED
-#define GPIOTE_ENABLED 1
+#define GPIOTE_ENABLED 0
 #endif
 // <o> GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS - Number of lower power input pins 
 #ifndef GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS
@@ -951,7 +951,7 @@
 // <e> I2S_ENABLED - nrf_drv_i2s - I2S peripheral driver - legacy layer
 //==========================================================
 #ifndef I2S_ENABLED
-#define I2S_ENABLED 1
+#define I2S_ENABLED 0
 #endif
 // <o> I2S_CONFIG_SCK_PIN - SCK pin  <0-31> 
 
@@ -1148,7 +1148,7 @@
 // <e> LPCOMP_ENABLED - nrf_drv_lpcomp - LPCOMP peripheral driver - legacy layer
 //==========================================================
 #ifndef LPCOMP_ENABLED
-#define LPCOMP_ENABLED 1
+#define LPCOMP_ENABLED 0
 #endif
 // <o> LPCOMP_CONFIG_REFERENCE  - Reference voltage
  
@@ -1228,7 +1228,7 @@
 // <e> NRFX_CLOCK_ENABLED - nrfx_clock - CLOCK peripheral driver
 //==========================================================
 #ifndef NRFX_CLOCK_ENABLED
-#define NRFX_CLOCK_ENABLED 1
+#define NRFX_CLOCK_ENABLED 0
 #endif
 // <o> NRFX_CLOCK_CONFIG_LF_SRC  - LF Clock Source
  

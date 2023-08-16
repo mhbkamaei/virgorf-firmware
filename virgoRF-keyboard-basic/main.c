@@ -20,7 +20,7 @@ const nrf_drv_rtc_t rtc_deb = NRF_DRV_RTC_INSTANCE(1); /**< Declaring an instanc
 
 
 // Define payload length
-#define TX_PAYLOAD_LENGTH ROWS ///< 5 byte payload length when transmitting
+#define TX_PAYLOAD_LENGTH ROWS ///< 4 byte payload length when transmitting
 
 // Data and acknowledgement payloads
 static uint8_t data_payload[TX_PAYLOAD_LENGTH];                ///< Payload to send to Host.
@@ -36,7 +36,7 @@ static uint32_t debounce_ticks, activity_ticks;
 static volatile bool debouncing = false;
 
 // Debug helper variables
-static volatile bool init_ok, enable_ok, push_ok, pop_ok, tx_success;
+static volatile bool tx_success;
 
 // Setup switch pins with pullups
 static void gpio_config(void)
@@ -51,20 +51,23 @@ static void gpio_config(void)
     nrf_gpio_cfg_output(R02);
     nrf_gpio_cfg_output(R03);
     nrf_gpio_cfg_output(R04);
+
+    nrf_gpio_pin_set(R01);
+    nrf_gpio_pin_set(R02);
+    nrf_gpio_pin_set(R03);
+    nrf_gpio_pin_set(R04);
 }
 
 // Return the key states of one row
 static uint8_t read_row(uint32_t row)
 {
     uint8_t buff = 0;
-    uint32_t input = 0;
     nrf_gpio_pin_set(row);
-    input = NRF_GPIO->IN;
-    buff = (buff << 1) | ((input >> C01) & 1);
-    buff = (buff << 1) | ((input >> C02) & 1);
-    buff = (buff << 1) | ((input >> C03) & 1);
-    buff = (buff << 1) | ((input >> C04) & 1);
-    buff = (buff << 1) | ((input >> C05) & 1);
+    buff = (buff << 1) | ((NRF_GPIO->IN >> C01) & 1);
+    buff = (buff << 1) | ((NRF_GPIO->IN >> C02) & 1);
+    buff = (buff << 1) | ((NRF_GPIO->IN >> C03) & 1);
+    buff = (buff << 1) | ((NRF_GPIO->IN >> C04) & 1);
+    buff = (buff << 1) | ((NRF_GPIO->IN >> C05) & 1);
     buff = (buff << 1);
     nrf_gpio_pin_clear(row);
     return buff;
@@ -176,7 +179,6 @@ static void handler_debounce(nrf_drv_rtc_int_type_t int_type)
             nrf_gpio_pin_set(R03);
             nrf_gpio_pin_set(R04);
         }
-
     }
     else
     {
