@@ -162,7 +162,7 @@ int main(void)
                                 ((data_payload_right[2] & 1<<6) ? 1:0) << 1 |
                                 ((data_payload_right[2] & 1<<5) ? 1:0) << 2 |
                                 ((data_payload_right[2] & 1<<4) ? 1:0) << 3 |
-                                ((data_payload_right[2] & 1<<3) ? 1:0) << 4 |
+                                ((data_payload_right[2] & 1<<3) ? 1:0) << 4 |1
                                 ((data_payload_right[2] & 1<<2) ? 1:0) << 5 |
                                 ((data_payload_right[2] & 1<<1) ? 1:0) << 6 |
                                 ((data_payload_right[2] & 1<<0) ? 1:0) << 7;
