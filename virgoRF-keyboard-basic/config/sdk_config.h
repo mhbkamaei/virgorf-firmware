@@ -52,7 +52,7 @@
 // <e> NRF_MPU_LIB_ENABLED - nrf_mpu_lib - Module for MPU
 //==========================================================
 #ifndef NRF_MPU_LIB_ENABLED
-#define NRF_MPU_LIB_ENABLED 1
+#define NRF_MPU_LIB_ENABLED 0
 #endif
 // <q> NRF_MPU_LIB_CLI_CMDS  - Enable CLI commands specific to the module.
  
@@ -66,7 +66,7 @@
 // <e> NRF_STACK_GUARD_ENABLED - nrf_stack_guard - Stack guard
 //==========================================================
 #ifndef NRF_STACK_GUARD_ENABLED
-#define NRF_STACK_GUARD_ENABLED 1
+#define NRF_STACK_GUARD_ENABLED 0
 #endif
 // <o> NRF_STACK_GUARD_CONFIG_SIZE  - Size of the stack guard.
  
@@ -94,7 +94,7 @@
 // <e> NRF_CRYPTO_ENABLED - nrf_crypto - Cryptography library.
 //==========================================================
 #ifndef NRF_CRYPTO_ENABLED
-#define NRF_CRYPTO_ENABLED 1
+#define NRF_CRYPTO_ENABLED 0
 #endif
 // <o> NRF_CRYPTO_ALLOCATOR  - Memory allocator
  
@@ -801,7 +801,7 @@
 // <i> Always recommended when using the nRF HW RNG as the context and temporary buffers are small. Consider disabling if using the CC310 RNG in a RAM constrained application. In this case, memory must be provided to nrf_crypto_rng_init, or it can be allocated internally provided that NRF_CRYPTO_ALLOCATOR does not allocate memory on the stack.
 
 #ifndef NRF_CRYPTO_RNG_STATIC_MEMORY_BUFFERS_ENABLED
-#define NRF_CRYPTO_RNG_STATIC_MEMORY_BUFFERS_ENABLED 1
+#define NRF_CRYPTO_RNG_STATIC_MEMORY_BUFFERS_ENABLED 0
 #endif
 
 // <q> NRF_CRYPTO_RNG_AUTO_INIT_ENABLED  - Initialize the RNG module automatically when nrf_crypto is initialized.
@@ -810,7 +810,7 @@
 // <i> Automatic initialization is only supported with static or internally allocated context and temporary memory.
 
 #ifndef NRF_CRYPTO_RNG_AUTO_INIT_ENABLED
-#define NRF_CRYPTO_RNG_AUTO_INIT_ENABLED 1
+#define NRF_CRYPTO_RNG_AUTO_INIT_ENABLED 0
 #endif
 
 // </h> 
@@ -1452,11 +1452,11 @@
 // <e> NRFX_GPIOTE_ENABLED - nrfx_gpiote - GPIOTE peripheral driver
 //==========================================================
 #ifndef NRFX_GPIOTE_ENABLED
-#define NRFX_GPIOTE_ENABLED 0
+#define NRFX_GPIOTE_ENABLED 1
 #endif
 // <o> NRFX_GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS - Number of lower power input pins 
 #ifndef NRFX_GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS
-#define NRFX_GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS 1
+#define NRFX_GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS 5
 #endif
 
 // <o> NRFX_GPIOTE_CONFIG_IRQ_PRIORITY  - Interrupt priority
@@ -5367,7 +5367,7 @@
 // <e> APP_SDCARD_ENABLED - app_sdcard - SD/MMC card support using SPI
 //==========================================================
 #ifndef APP_SDCARD_ENABLED
-#define APP_SDCARD_ENABLED 1
+#define APP_SDCARD_ENABLED 0
 #endif
 // <o> APP_SDCARD_SPI_INSTANCE  - SPI instance used
  
@@ -5412,7 +5412,7 @@
 // <e> APP_TIMER_ENABLED - app_timer - Application timer functionality
 //==========================================================
 #ifndef APP_TIMER_ENABLED
-#define APP_TIMER_ENABLED 1
+#define APP_TIMER_ENABLED 0
 #endif
 // <o> APP_TIMER_CONFIG_RTC_FREQUENCY  - Configure RTC prescaler.
  
@@ -5523,14 +5523,14 @@
  
 
 #ifndef CRC16_ENABLED
-#define CRC16_ENABLED 1
+#define CRC16_ENABLED 0
 #endif
 
 // <q> CRC32_ENABLED  - crc32 - CRC32 calculation routines
  
 
 #ifndef CRC32_ENABLED
-#define CRC32_ENABLED 1
+#define CRC32_ENABLED 0
 #endif
 
 // <q> ECC_ENABLED  - ecc - Elliptic Curve Cryptography Library
@@ -5543,7 +5543,7 @@
 // <e> FDS_ENABLED - fds - Flash data storage module
 //==========================================================
 #ifndef FDS_ENABLED
-#define FDS_ENABLED 1
+#define FDS_ENABLED 0
 #endif
 // <h> Pages - Virtual page settings
 
@@ -5661,13 +5661,13 @@
  
 
 #ifndef HARDFAULT_HANDLER_ENABLED
-#define HARDFAULT_HANDLER_ENABLED 1
+#define HARDFAULT_HANDLER_ENABLED 0
 #endif
 
 // <e> HCI_MEM_POOL_ENABLED - hci_mem_pool - memory pool implementation used by HCI
 //==========================================================
 #ifndef HCI_MEM_POOL_ENABLED
-#define HCI_MEM_POOL_ENABLED 1
+#define HCI_MEM_POOL_ENABLED 0
 #endif
 // <o> HCI_TX_BUF_SIZE - TX buffer size in bytes. 
 #ifndef HCI_TX_BUF_SIZE
@@ -5689,7 +5689,7 @@
 // <e> HCI_SLIP_ENABLED - hci_slip - SLIP protocol implementation used by HCI
 //==========================================================
 #ifndef HCI_SLIP_ENABLED
-#define HCI_SLIP_ENABLED 1
+#define HCI_SLIP_ENABLED 0
 #endif
 // <o> HCI_UART_BAUDRATE  - Default Baudrate
  
@@ -5748,7 +5748,7 @@
 // <e> HCI_TRANSPORT_ENABLED - hci_transport - HCI transport
 //==========================================================
 #ifndef HCI_TRANSPORT_ENABLED
-#define HCI_TRANSPORT_ENABLED 1
+#define HCI_TRANSPORT_ENABLED 0
 #endif
 // <o> HCI_MAX_PACKET_SIZE_IN_BITS - Maximum size of a single application packet in bits. 
 #ifndef HCI_MAX_PACKET_SIZE_IN_BITS
@@ -5761,14 +5761,14 @@
  
 
 #ifndef LED_SOFTBLINK_ENABLED
-#define LED_SOFTBLINK_ENABLED 1
+#define LED_SOFTBLINK_ENABLED 0
 #endif
 
 // <q> LOW_POWER_PWM_ENABLED  - low_power_pwm - low_power_pwm module
  
 
 #ifndef LOW_POWER_PWM_ENABLED
-#define LOW_POWER_PWM_ENABLED 1
+#define LOW_POWER_PWM_ENABLED 0
 #endif
 
 // <e> MEM_MANAGER_ENABLED - mem_manager - Dynamic memory allocator
@@ -9457,7 +9457,7 @@
  
 
 #ifndef NRF_LOG_STR_FORMATTER_TIMESTAMP_FORMAT_ENABLED
-#define NRF_LOG_STR_FORMATTER_TIMESTAMP_FORMAT_ENABLED 1
+#define NRF_LOG_STR_FORMATTER_TIMESTAMP_FORMAT_ENABLED 0
 #endif
 
 // </h> 

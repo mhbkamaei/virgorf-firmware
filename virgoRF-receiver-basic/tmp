@@ -14,8 +14,8 @@
 
 #define RX_PIN_NUMBER  8
 #define TX_PIN_NUMBER  6
-#define CTS_PIN_NUMBER 0
-#define RTS_PIN_NUMBER 0
+#define CTS_PIN_NUMBER 23
+#define RTS_PIN_NUMBER 22
 #define HWFC           false
 
 static nrf_drv_uart_t m_uart = NRF_DRV_UART_INSTANCE(0);
@@ -51,6 +51,7 @@ void uart_error_handle(app_uart_evt_t * p_event)
         APP_ERROR_HANDLER(p_event->data.error_code);
     }
 }
+
 
 int main(void)
 {
@@ -139,7 +140,7 @@ int main(void)
         {
             eol = 0x0F;
             packet_received_right = false;
-
+            
             data_buffer[1] =    ((data_payload_right[0] & 1<<7) ? 1:0) << 0 |
                                 ((data_payload_right[0] & 1<<6) ? 1:0) << 1 |
                                 ((data_payload_right[0] & 1<<5) ? 1:0) << 2 |

@@ -1,4 +1,3 @@
-
 #define COMPILE_RIGHT
 //#define COMPILE_LEFT
 
@@ -18,6 +17,7 @@
 const nrf_drv_rtc_t rtc_maint = NRF_DRV_RTC_INSTANCE(0); /**< Declaring an instance of nrf_drv_rtc for RTC0. */
 const nrf_drv_rtc_t rtc_deb = NRF_DRV_RTC_INSTANCE(1); /**< Declaring an instance of nrf_drv_rtc for RTC1. */
 
+const unsigned short REMAINING_POSITIONS = 8 - COLUMNS;
 
 // Define payload length
 #define TX_PAYLOAD_LENGTH ROWS ///< 4 byte payload length when transmitting
@@ -51,11 +51,6 @@ static void gpio_config(void)
     nrf_gpio_cfg_output(R02);
     nrf_gpio_cfg_output(R03);
     nrf_gpio_cfg_output(R04);
-
-    nrf_gpio_pin_set(R01);
-    nrf_gpio_pin_set(R02);
-    nrf_gpio_pin_set(R03);
-    nrf_gpio_pin_set(R04);
 }
 
 // Return the key states of one row
@@ -63,23 +58,35 @@ static uint8_t read_row(uint32_t row)
 {
     uint8_t buff = 0;
     nrf_gpio_pin_set(row);
+    buff = (buff << 1) | (nrf_gpio_pin_read(C01) & 1);
+    buff = (buff << 1) | (nrf_gpio_pin_read(C02) & 1);
+    buff = (buff << 1) | (nrf_gpio_pin_read(C03) & 1);
+    buff = (buff << 1) | (nrf_gpio_pin_read(C04) & 1);
+    buff = (buff << 1) | (nrf_gpio_pin_read(C05) & 1);
+    nrf_gpio_pin_clear(row);
+    return buff;
+}
+static uint8_t read_row3()
+{
+    uint8_t buff = 0;
+    nrf_gpio_pin_set(16);
     buff = (buff << 1) | ((NRF_GPIO->IN >> C01) & 1);
     buff = (buff << 1) | ((NRF_GPIO->IN >> C02) & 1);
     buff = (buff << 1) | ((NRF_GPIO->IN >> C03) & 1);
     buff = (buff << 1) | ((NRF_GPIO->IN >> C04) & 1);
     buff = (buff << 1) | ((NRF_GPIO->IN >> C05) & 1);
-    buff = (buff << 1);
-    nrf_gpio_pin_clear(row);
+    nrf_gpio_pin_clear(16);
     return buff;
 }
 
 // Return the key states
 static void read_keys(void)
 {
-    keys_buffer[0] = read_row(R01);
-    keys_buffer[1] = read_row(R02);
-    keys_buffer[2] = read_row(R03);
-    keys_buffer[3] = read_row(R04);
+    keys_buffer[0] = read_row(R01) << REMAINING_POSITIONS;
+    keys_buffer[1] = read_row(R02) << REMAINING_POSITIONS;
+    keys_buffer[2] = read_row3() << REMAINING_POSITIONS;
+    keys_buffer[3] = read_row(R04) << REMAINING_POSITIONS;
+
     return;
 }
 
@@ -97,7 +104,7 @@ static bool compare_keys(uint8_t* first, uint8_t* second, uint32_t size)
 
 static bool empty_keys(void)
 {
-    for(int i=0; i < ROWS; i++)
+    for(int i=0; i < 4; i++)
     {
         if (keys_buffer[i])
         {
@@ -110,7 +117,7 @@ static bool empty_keys(void)
 // Assemble packet and send to receiver
 static void send_data(void)
 {
-    for(int i=0; i < ROWS; i++)
+    for(int i=0; i < 4; i++)
     {
         data_payload[i] = keys[i];
     }
@@ -266,7 +273,6 @@ void GPIOTE_IRQHandler(void)
         nrf_gpio_pin_clear(R03);
         nrf_gpio_pin_clear(R04);
 
-        //TODO: proper interrupt handling to avoid fake interrupts because of matrix scanning
         //debouncing = false;
         //debounce_ticks = 0;
         activity_ticks = 0;
