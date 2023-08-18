@@ -1,10 +1,9 @@
-#define COMPILE_RIGHT
-//#define COMPILE_LEFT
+//#define COMPILE_RIGHT
+#define COMPILE_LEFT
 
 #include "virgoRF.h"
 #include "nrf_gzll.h"
 #include "nrf_gpio.h"
-#include "nrf_delay.h"
 #include "nrf_drv_clock.h"
 #include "nrf_drv_rtc.h"
 #include "nrf52_bitfields.h"
@@ -20,7 +19,7 @@ const nrf_drv_rtc_t rtc_deb = NRF_DRV_RTC_INSTANCE(1); /**< Declaring an instanc
 const unsigned short REMAINING_POSITIONS = 8 - COLUMNS;
 
 // Define payload length
-#define TX_PAYLOAD_LENGTH ROWS ///< 4 byte payload length when transmitting
+#define TX_PAYLOAD_LENGTH ROWS /// 4 byte payload length when transmitting
 
 // Data and acknowledgement payloads
 static uint8_t data_payload[TX_PAYLOAD_LENGTH];                ///< Payload to send to Host.
@@ -41,6 +40,7 @@ static volatile bool tx_success;
 // Setup switch pins with pullups
 static void gpio_config(void)
 {
+    nrf_gpio_cfg_sense_input(C00, NRF_GPIO_PIN_PULLDOWN, NRF_GPIO_PIN_SENSE_HIGH);
     nrf_gpio_cfg_sense_input(C01, NRF_GPIO_PIN_PULLDOWN, NRF_GPIO_PIN_SENSE_HIGH);
     nrf_gpio_cfg_sense_input(C02, NRF_GPIO_PIN_PULLDOWN, NRF_GPIO_PIN_SENSE_HIGH);
     nrf_gpio_cfg_sense_input(C03, NRF_GPIO_PIN_PULLDOWN, NRF_GPIO_PIN_SENSE_HIGH);
@@ -58,6 +58,7 @@ static uint8_t read_row(uint32_t row)
 {
     uint8_t buff = 0;
     nrf_gpio_pin_set(row);
+    nrf_gpio_pin_read(C01);
     buff = (buff << 1) | (nrf_gpio_pin_read(C01) & 1);
     buff = (buff << 1) | (nrf_gpio_pin_read(C02) & 1);
     buff = (buff << 1) | (nrf_gpio_pin_read(C03) & 1);
@@ -71,26 +72,16 @@ static uint8_t read_row(uint32_t row)
 // Return the key states
 static void read_keys(void)
 {
-    if(read_row(R03) == 16){
-        keys_buffer[2]=16;
-    } else {
-        keys_buffer[2] = read_row(R03) << REMAINING_POSITIONS;
-    }
-    if(read_row(R03) != 0){
-        keys_buffer[2]=128;
-    } else {
-        keys_buffer[2] = read_row(R03) << REMAINING_POSITIONS;
-    }
-    keys_buffer[0] = read_row(R01) << REMAINING_POSITIONS;
-    keys_buffer[1] = read_row(R02) << REMAINING_POSITIONS;
-    
-    keys_buffer[3] = read_row(R04) << REMAINING_POSITIONS;
+    keys_buffer[0] = read_row(R01);// << REMAINING_POSITIONS;
+    keys_buffer[1] = read_row(R02);// << REMAINING_POSITIONS;
+    keys_buffer[2] = read_row(R03) << 3;// << REMAINING_POSITIONS;
+    keys_buffer[3] = read_row(R04);// << REMAINING_POSITIONS;
     return;
 }
 
-static bool compare_keys(uint8_t* first, uint8_t* second, uint32_t size)
+static bool compare_keys(uint8_t* first, uint8_t* second)
 {
-    for(int i=0; i < 4; i++)
+    for(int i=0; i < ROWS; i++)
     {
         if (first[i] != second[i])
         {
@@ -102,7 +93,7 @@ static bool compare_keys(uint8_t* first, uint8_t* second, uint32_t size)
 
 static bool empty_keys(void)
 {
-    for(int i=0; i < 4; i++)
+    for(int i=0; i < ROWS; i++)
     {
         if (keys_buffer[i])
         {
@@ -115,7 +106,7 @@ static bool empty_keys(void)
 // Assemble packet and send to receiver
 static void send_data(void)
 {
-    for(int i=0; i < 4; i++)
+    for(int i=0; i < ROWS; i++)
     {
         data_payload[i] = keys[i];
     }
@@ -137,13 +128,13 @@ static void handler_debounce(nrf_drv_rtc_int_type_t int_type)
     if (debouncing)
     {
         // if debouncing, check if current keystates equal to the snapshot
-        if (compare_keys(keys_snapshot, keys_buffer, ROWS))
+        if (compare_keys(keys_snapshot, keys_buffer))
         {
             // DEBOUNCE ticks of stable sampling needed before sending data
             debounce_ticks++;
             if (debounce_ticks == DEBOUNCE)
             {
-                for(int j=0; j < 4; j++)
+                for(int j=0; j < ROWS; j++)
                 {
                     keys[j] = keys_snapshot[j];
                 }
@@ -160,9 +151,9 @@ static void handler_debounce(nrf_drv_rtc_int_type_t int_type)
     {
         // if the keystate is different from the last data
         // sent to the receiver, start debouncing
-        if (!compare_keys(keys, keys_buffer, ROWS))
+        if (!compare_keys(keys, keys_buffer))
         {
-            for(int k=0; k < 4; k++)
+            for(int k=0; k < ROWS; k++)
             {
                 keys_snapshot[k] = keys_buffer[k];
             }
