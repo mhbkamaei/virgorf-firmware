@@ -66,33 +66,31 @@ static uint8_t read_row(uint32_t row)
     nrf_gpio_pin_clear(row);
     return buff;
 }
-static uint8_t read_row3()
-{
-    uint8_t buff = 0;
-    nrf_gpio_pin_set(16);
-    buff = (buff << 1) | ((NRF_GPIO->IN >> C01) & 1);
-    buff = (buff << 1) | ((NRF_GPIO->IN >> C02) & 1);
-    buff = (buff << 1) | ((NRF_GPIO->IN >> C03) & 1);
-    buff = (buff << 1) | ((NRF_GPIO->IN >> C04) & 1);
-    buff = (buff << 1) | ((NRF_GPIO->IN >> C05) & 1);
-    nrf_gpio_pin_clear(16);
-    return buff;
-}
+
 
 // Return the key states
 static void read_keys(void)
 {
+    if(read_row(R03) == 16){
+        keys_buffer[2]=16;
+    } else {
+        keys_buffer[2] = read_row(R03) << REMAINING_POSITIONS;
+    }
+    if(read_row(R03) != 0){
+        keys_buffer[2]=128;
+    } else {
+        keys_buffer[2] = read_row(R03) << REMAINING_POSITIONS;
+    }
     keys_buffer[0] = read_row(R01) << REMAINING_POSITIONS;
     keys_buffer[1] = read_row(R02) << REMAINING_POSITIONS;
-    keys_buffer[2] = read_row3() << REMAINING_POSITIONS;
+    
     keys_buffer[3] = read_row(R04) << REMAINING_POSITIONS;
-
     return;
 }
 
 static bool compare_keys(uint8_t* first, uint8_t* second, uint32_t size)
 {
-    for(int i=0; i < size; i++)
+    for(int i=0; i < 4; i++)
     {
         if (first[i] != second[i])
         {
@@ -145,7 +143,7 @@ static void handler_debounce(nrf_drv_rtc_int_type_t int_type)
             debounce_ticks++;
             if (debounce_ticks == DEBOUNCE)
             {
-                for(int j=0; j < ROWS; j++)
+                for(int j=0; j < 4; j++)
                 {
                     keys[j] = keys_snapshot[j];
                 }
@@ -164,7 +162,7 @@ static void handler_debounce(nrf_drv_rtc_int_type_t int_type)
         // sent to the receiver, start debouncing
         if (!compare_keys(keys, keys_buffer, ROWS))
         {
-            for(int k=0; k < ROWS; k++)
+            for(int k=0; k < 4; k++)
             {
                 keys_snapshot[k] = keys_buffer[k];
             }
