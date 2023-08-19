@@ -66,6 +66,8 @@ static uint8_t read_row(uint32_t row)
     buff = (buff << 1); //1
     buff = (buff << 1); //0
     nrf_gpio_pin_clear(row);
+    #return NRF_GPIO->IN & ~MASK;
+    #return ~NRF_GPIO->IN & MASK;
     return buff;
 }
 
