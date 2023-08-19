@@ -200,9 +200,11 @@ static void lfclk_config(void)
 // RTC peripheral configuration
 static void rtc_config(void)
 {
+    nrf_drv_rtc_config_t config = NRF_DRV_RTC_DEFAULT_CONFIG;
+    config.prescaler = 4095; //125 ms
     //Initialize RTC instance
-    nrf_drv_rtc_init(&rtc_maint, NULL, handler_maintenance);
-    nrf_drv_rtc_init(&rtc_deb, NULL, handler_debounce);
+    nrf_drv_rtc_init(&rtc_maint, &config, handler_maintenance);
+    nrf_drv_rtc_init(&rtc_deb, &config, handler_debuonce);
 
     //Enable tick event & interrupt
     nrf_drv_rtc_tick_enable(&rtc_maint,true);
