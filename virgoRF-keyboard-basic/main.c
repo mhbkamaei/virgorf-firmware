@@ -8,6 +8,7 @@
 #include "nrf_drv_rtc.h"
 #include "nrf52_bitfields.h"
 #include "nrf52.h"
+#include "nrf_delay.h"
 
 /*****************************************************************************/
 /** Configuration */
@@ -15,8 +16,6 @@
 
 const nrf_drv_rtc_t rtc_maint = NRF_DRV_RTC_INSTANCE(0); /**< Declaring an instance of nrf_drv_rtc for RTC0. */
 const nrf_drv_rtc_t rtc_deb = NRF_DRV_RTC_INSTANCE(1); /**< Declaring an instance of nrf_drv_rtc for RTC1. */
-
-const unsigned short REMAINING_POSITIONS = 8 - COLUMNS;
 
 // Define payload length
 #define TX_PAYLOAD_LENGTH ROWS /// 4 byte payload length when transmitting
@@ -30,14 +29,14 @@ static uint8_t ack_payload[NRF_GZLL_CONST_MAX_PAYLOAD_LENGTH]; ///< Placeholder 
 #define ACTIVITY 500
 
 // Key buffers
-static uint8_t keys[ROWS], keys_snapshot[ROWS], keys_buffer[ROWS];
+static uint8_t keys[ROWS], keys_snapshot[ROWS], keys_buffer[ROWS] = {0};
 static uint32_t debounce_ticks, activity_ticks;
 static volatile bool debouncing = false;
 
 // Debug helper variables
 static volatile bool tx_success;
 
-// Setup switch pins with pullups
+
 static void gpio_config(void)
 {
     nrf_gpio_cfg_sense_input(C01, NRF_GPIO_PIN_PULLDOWN, NRF_GPIO_PIN_SENSE_HIGH);
@@ -57,24 +56,30 @@ static uint8_t read_row(uint32_t row)
 {
     uint8_t buff = 0;
     nrf_gpio_pin_set(row);
-    nrf_gpio_pin_read(C01); // This is necessary to read pins correctly!
-    buff = (buff << 1) | (nrf_gpio_pin_read(C01) & 1);
-    buff = (buff << 1) | (nrf_gpio_pin_read(C02) & 1);
-    buff = (buff << 1) | (nrf_gpio_pin_read(C03) & 1);
-    buff = (buff << 1) | (nrf_gpio_pin_read(C04) & 1);
-    buff = (buff << 1) | (nrf_gpio_pin_read(C05) & 1);
+    nrf_gpio_pin_read(C01);
+    buff = (buff << 1) | (nrf_gpio_pin_read(C01) & 1);//7
+    buff = (buff << 1) | (nrf_gpio_pin_read(C02) & 1);//6
+    buff = (buff << 1) | (nrf_gpio_pin_read(C03) & 1);//5
+    buff = (buff << 1) | (nrf_gpio_pin_read(C04) & 1);//4
+    buff = (buff << 1) | (nrf_gpio_pin_read(C05) & 1);//3
+    buff = (buff << 1); //2
+    buff = (buff << 1); //1
+    buff = (buff << 1); //0
     nrf_gpio_pin_clear(row);
     return buff;
 }
 
-
 // Return the key states
 static void read_keys(void)
 {
-    keys_buffer[0] = read_row(R01) << REMAINING_POSITIONS;
-    keys_buffer[1] = read_row(R02) << REMAINING_POSITIONS;
-    keys_buffer[2] = read_row(R03) << REMAINING_POSITIONS;
-    keys_buffer[3] = read_row(R04) << REMAINING_POSITIONS;
+    nrf_delay_us(1);
+    keys_buffer[0] = read_row(R01);
+    nrf_delay_us(1);
+    keys_buffer[1] = read_row(R02);
+    nrf_delay_us(1);
+    keys_buffer[2] = read_row(R03);
+    nrf_delay_us(1);
+    keys_buffer[3] = read_row(R04);
     return;
 }
 

@@ -27,10 +27,10 @@ static nrf_drv_uart_t m_uart = NRF_DRV_UART_INSTANCE(0);
 #define INACTIVE 100000
 
 // Data and acknowledgement payloads
-static uint8_t data_payload_left[NRF_GZLL_CONST_MAX_PAYLOAD_LENGTH];  ///< Placeholder for data payload received from host. 
-static uint8_t data_payload_right[NRF_GZLL_CONST_MAX_PAYLOAD_LENGTH];  ///< Placeholder for data payload received from host. 
-static uint8_t ack_payload[TX_PAYLOAD_LENGTH];                   ///< Payload to attach to ACK sent to device.
-static uint8_t data_buffer[8];
+static uint8_t data_payload_left[NRF_GZLL_CONST_MAX_PAYLOAD_LENGTH] = {0};  ///< Placeholder for data payload received from host. 
+static uint8_t data_payload_right[NRF_GZLL_CONST_MAX_PAYLOAD_LENGTH] = {0};  ///< Placeholder for data payload received from host. 
+static uint8_t ack_payload[TX_PAYLOAD_LENGTH] = {0};                   ///< Payload to attach to ACK sent to device.
+static uint8_t data_buffer[8] = {0};
 
 // Debug helper variables
 extern nrf_gzll_error_code_t nrf_gzll_error_code;   ///< Error code
@@ -96,6 +96,7 @@ int main(void)
         // detecting received packet from interupt, and unpacking
         if (packet_received_left)
         {
+            eol = 0x0F;
             packet_received_left = false;
 
             data_buffer[0] =    ((data_payload_left[0] & 1<<7) ? 1:0) << 0 |
@@ -104,7 +105,7 @@ int main(void)
                                 ((data_payload_left[0] & 1<<4) ? 1:0) << 3 |
                                 ((data_payload_left[0] & 1<<3) ? 1:0) << 4 |
                                 ((data_payload_left[0] & 1<<2) ? 1:0) << 5 |
-                                ((data_payload_left[0] & 1<<1) ? 1:0) << 6 |
+                                ((data_payload_left[0] & 1<<1) ? 1:0) << 4 |
                                 ((data_payload_left[0] & 1<<0) ? 1:0) << 7;
 
             data_buffer[2] =    ((data_payload_left[1] & 1<<7) ? 1:0) << 0 |
@@ -162,7 +163,7 @@ int main(void)
                                 ((data_payload_right[2] & 1<<6) ? 1:0) << 1 |
                                 ((data_payload_right[2] & 1<<5) ? 1:0) << 2 |
                                 ((data_payload_right[2] & 1<<4) ? 1:0) << 3 |
-                                ((data_payload_right[2] & 1<<3) ? 1:0) << 4 |1
+                                ((data_payload_right[2] & 1<<3) ? 1:0) << 4 |
                                 ((data_payload_right[2] & 1<<2) ? 1:0) << 5 |
                                 ((data_payload_right[2] & 1<<1) ? 1:0) << 6 |
                                 ((data_payload_right[2] & 1<<0) ? 1:0) << 7;
