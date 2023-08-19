@@ -58,7 +58,7 @@ static uint8_t read_row(uint32_t row)
 {
     uint8_t buff = 0;
     nrf_gpio_pin_set(row);
-    nrf_gpio_pin_read(C01);
+    nrf_gpio_pin_read(C01); // This is necessary to read pins correctly!
     buff = (buff << 1) | (nrf_gpio_pin_read(C01) & 1);
     buff = (buff << 1) | (nrf_gpio_pin_read(C02) & 1);
     buff = (buff << 1) | (nrf_gpio_pin_read(C03) & 1);
