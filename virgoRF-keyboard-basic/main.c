@@ -40,7 +40,6 @@ static volatile bool tx_success;
 // Setup switch pins with pullups
 static void gpio_config(void)
 {
-    nrf_gpio_cfg_sense_input(C00, NRF_GPIO_PIN_PULLDOWN, NRF_GPIO_PIN_SENSE_HIGH);
     nrf_gpio_cfg_sense_input(C01, NRF_GPIO_PIN_PULLDOWN, NRF_GPIO_PIN_SENSE_HIGH);
     nrf_gpio_cfg_sense_input(C02, NRF_GPIO_PIN_PULLDOWN, NRF_GPIO_PIN_SENSE_HIGH);
     nrf_gpio_cfg_sense_input(C03, NRF_GPIO_PIN_PULLDOWN, NRF_GPIO_PIN_SENSE_HIGH);
@@ -72,10 +71,10 @@ static uint8_t read_row(uint32_t row)
 // Return the key states
 static void read_keys(void)
 {
-    keys_buffer[0] = read_row(R01);// << REMAINING_POSITIONS;
-    keys_buffer[1] = read_row(R02);// << REMAINING_POSITIONS;
-    keys_buffer[2] = read_row(R03) << 3;// << REMAINING_POSITIONS;
-    keys_buffer[3] = read_row(R04);// << REMAINING_POSITIONS;
+    keys_buffer[0] = read_row(R01) << REMAINING_POSITIONS;
+    keys_buffer[1] = read_row(R02) << REMAINING_POSITIONS;
+    keys_buffer[2] = read_row(R03) << REMAINING_POSITIONS;
+    keys_buffer[3] = read_row(R04) << REMAINING_POSITIONS;
     return;
 }
 
