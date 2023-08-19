@@ -4571,14 +4571,24 @@
 #define RTC0_ENABLED 1
 #endif
 
-// <q> RTC1_ENABLED  - Enable RTC1 instance
+#if (RTC0_ENABLED == 1)
+#define RTC0_CONFIG_FREQUENCY	 8
+#define RTC0_CONFIG_IRQ_PRIORITY APP_IRQ_PRIORITY_LOW
+#define RTC0_CONFIG_RELIABLE     false
+
+ // <q> RTC1_ENABLED  - Enable RTC1 instance
  
 
 #ifndef RTC1_ENABLED
 #define RTC1_ENABLED 1
 #endif
 
-// <q> RTC2_ENABLED  - Enable RTC2 instance
+#if (RTC1_ENABLED == 1)
+#define RTC1_CONFIG_FREQUENCY	 1000
+#define RTC1_CONFIG_IRQ_PRIORITY APP_IRQ_PRIORITY_LOW
+#define RTC1_CONFIG_RELIABLE     false
+
+ // <q> RTC2_ENABLED  - Enable RTC2 instance
  
 
 #ifndef RTC2_ENABLED
