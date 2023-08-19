@@ -204,7 +204,7 @@ static void rtc_config(void)
     config.prescaler = 4095; //125 ms
     //Initialize RTC instance
     nrf_drv_rtc_init(&rtc_maint, &config, handler_maintenance);
-    nrf_drv_rtc_init(&rtc_deb, &config, handler_debuonce);
+    nrf_drv_rtc_init(&rtc_deb, &config, handler_debounce);
 
     //Enable tick event & interrupt
     nrf_drv_rtc_tick_enable(&rtc_maint,true);
