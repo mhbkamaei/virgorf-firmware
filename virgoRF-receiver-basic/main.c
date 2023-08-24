@@ -12,8 +12,8 @@
 #define UART_TX_BUF_SIZE 256                         /**< UART TX buffer size. */
 #define UART_RX_BUF_SIZE 1                           /**< UART RX buffer size. */
 
-#define RX_PIN_NUMBER  8
-#define TX_PIN_NUMBER  6
+#define TX_PIN_NUMBER  28
+#define RX_PIN_NUMBER  29
 #define CTS_PIN_NUMBER 0
 #define RTS_PIN_NUMBER 0
 #define HWFC           false
