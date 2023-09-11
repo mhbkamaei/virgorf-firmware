@@ -27,10 +27,10 @@ static nrf_drv_uart_t m_uart = NRF_DRV_UART_INSTANCE(0);
 #define INACTIVE 100000
 
 // Data and acknowledgement payloads
-static uint8_t data_payload_left[NRF_GZLL_CONST_MAX_PAYLOAD_LENGTH] = {0};  ///< Placeholder for data payload received from host. 
-static uint8_t data_payload_right[NRF_GZLL_CONST_MAX_PAYLOAD_LENGTH] = {0};  ///< Placeholder for data payload received from host. 
-static uint8_t ack_payload[TX_PAYLOAD_LENGTH] = {0};                   ///< Payload to attach to ACK sent to device.
-static uint8_t data_buffer[8] = {0};
+static uint8_t data_payload_left[NRF_GZLL_CONST_MAX_PAYLOAD_LENGTH];  ///< Placeholder for data payload received from host. 
+static uint8_t data_payload_right[NRF_GZLL_CONST_MAX_PAYLOAD_LENGTH];  ///< Placeholder for data payload received from host. 
+static uint8_t ack_payload[TX_PAYLOAD_LENGTH];                   ///< Payload to attach to ACK sent to device.
+static uint8_t data_buffer[8];
 
 // Debug helper variables
 extern nrf_gzll_error_code_t nrf_gzll_error_code;   ///< Error code
@@ -38,7 +38,6 @@ static bool packet_received_left, packet_received_right;
 uint32_t left_active = 0;
 uint32_t right_active = 0;
 uint8_t c;
-uint8_t eol = 0xE0;
 
 void uart_error_handle(app_uart_evt_t * p_event)
 {
@@ -96,7 +95,6 @@ int main(void)
         // detecting received packet from interupt, and unpacking
         if (packet_received_left)
         {
-            eol = 0x0F;
             packet_received_left = false;
 
             data_buffer[0] =    ((data_payload_left[0] & 1<<7) ? 1:0) << 0 |
@@ -138,7 +136,6 @@ int main(void)
 
         if (packet_received_right)
         {
-            eol = 0x0F;
             packet_received_right = false;
 
             data_buffer[1] =    ((data_payload_right[0] & 1<<7) ? 1:0) << 0 |
@@ -183,8 +180,7 @@ int main(void)
         {
             // sending data to QMK, and an end byte
             nrf_drv_uart_tx(&m_uart, data_buffer,8);
-            app_uart_put(eol);
-            eol = 0xE0;
+            app_uart_put(0xE0);
         }
         // allowing UART buffers to clear
         nrf_delay_us(10);

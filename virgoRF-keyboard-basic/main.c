@@ -8,7 +8,6 @@
 #include "nrf_drv_rtc.h"
 #include "nrf52_bitfields.h"
 #include "nrf52.h"
-#include "nrf_delay.h"
 
 /*****************************************************************************/
 /** Configuration */
@@ -29,7 +28,7 @@ static uint8_t ack_payload[NRF_GZLL_CONST_MAX_PAYLOAD_LENGTH]; ///< Placeholder 
 #define ACTIVITY 500
 
 // Key buffers
-static uint8_t keys[ROWS], keys_snapshot[ROWS], keys_buffer[ROWS] = {0};
+static uint8_t keys[ROWS], keys_snapshot[ROWS], keys_buffer[ROWS];
 static uint32_t debounce_ticks, activity_ticks;
 static volatile bool debouncing = false;
 
@@ -57,6 +56,8 @@ static uint8_t read_row(uint32_t row)
     uint8_t buff = 0;
     nrf_gpio_pin_set(row);
     nrf_gpio_pin_read(C01);
+    buff = (buff << 1) | (nrf_gpio_pin_read(C01) & 1);//1st reading might be wrong!
+    buff = (buff << 1) | (nrf_gpio_pin_read(C01) & 1);//2nd reading might be wrong!
     buff = (buff << 1) | (nrf_gpio_pin_read(C01) & 1);//7
     buff = (buff << 1) | (nrf_gpio_pin_read(C02) & 1);//6
     buff = (buff << 1) | (nrf_gpio_pin_read(C03) & 1);//5
@@ -66,21 +67,15 @@ static uint8_t read_row(uint32_t row)
     buff = (buff << 1); //1
     buff = (buff << 1); //0
     nrf_gpio_pin_clear(row);
-    //return NRF_GPIO->IN & ~MASK;
-    //return ~NRF_GPIO->IN & MASK;
     return buff;
 }
 
 // Return the key states
 static void read_keys(void)
 {
-    nrf_delay_us(1);
     keys_buffer[0] = read_row(R01);
-    nrf_delay_us(1);
     keys_buffer[1] = read_row(R02);
-    nrf_delay_us(1);
     keys_buffer[2] = read_row(R03);
-    nrf_delay_us(1);
     keys_buffer[3] = read_row(R04);
     return;
 }
@@ -174,12 +169,12 @@ static void handler_debounce(nrf_drv_rtc_int_type_t int_type)
         activity_ticks++;
         if (activity_ticks > ACTIVITY)
         {
-            nrf_drv_rtc_disable(&rtc_maint);
-            nrf_drv_rtc_disable(&rtc_deb);
             nrf_gpio_pin_set(R01);
             nrf_gpio_pin_set(R02);
             nrf_gpio_pin_set(R03);
             nrf_gpio_pin_set(R04);
+            nrf_drv_rtc_disable(&rtc_maint);
+            nrf_drv_rtc_disable(&rtc_deb);
         }
     }
     else
@@ -200,11 +195,9 @@ static void lfclk_config(void)
 // RTC peripheral configuration
 static void rtc_config(void)
 {
-    nrf_drv_rtc_config_t config = NRF_DRV_RTC_DEFAULT_CONFIG;
-    config.prescaler = 4095; //125 ms
     //Initialize RTC instance
-    nrf_drv_rtc_init(&rtc_maint, &config, handler_maintenance);
-    nrf_drv_rtc_init(&rtc_deb, &config, handler_debounce);
+    nrf_drv_rtc_init(&rtc_maint, NULL, handler_maintenance);
+    nrf_drv_rtc_init(&rtc_deb, NULL, handler_debounce);
 
     //Enable tick event & interrupt
     nrf_drv_rtc_tick_enable(&rtc_maint,true);
@@ -239,16 +232,24 @@ int main()
     // Configure all keys as inputs with pullups
     gpio_config();
 
-    // Set the GPIOTE PORT event as interrupt source, and enable interrupts for GPIOTE
-    NRF_GPIOTE->INTENSET = GPIOTE_INTENSET_PORT_Msk;
+    // Disable the port event as an intrrupt source during configuration.
+    NRF_GPIOTE->INTENCLR = GPIOTE_INTENSET_PORT_Msk;
+
+    // Configure and enable the GPIOTE interrupt.
+    NVIC_SetPriority(GPIOTE_IRQn, 6);
+    NVIC_ClearPendingIRQ(GPIOTE_IRQn);
     NVIC_EnableIRQ(GPIOTE_IRQn);
+
+    // Enable the GPIOTE PORT event as interrupt source.
+    NRF_GPIOTE->EVENTS_PORT = 0;
+    NRF_GPIOTE->INTENSET = GPIOTE_INTENSET_PORT_Msk;
 
 
     // Main loop, constantly sleep, waiting for RTC and gpio IRQs
     while(1)
     {
-        __SEV();
         __WFE();
+        __SEV();
         __WFE();
     }
 }
@@ -264,7 +265,6 @@ void GPIOTE_IRQHandler(void)
         //enable rtc interupt triggers
         nrf_drv_rtc_enable(&rtc_maint);
         nrf_drv_rtc_enable(&rtc_deb);
-
         nrf_gpio_pin_clear(R01);
         nrf_gpio_pin_clear(R02);
         nrf_gpio_pin_clear(R03);
